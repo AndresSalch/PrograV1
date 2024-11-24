@@ -1,41 +1,41 @@
 ﻿using Azure;
 using GymV1.BLL.BL;
-using GymV1.Components.Pages;
-using GymV1.Share.Model;
-using System.Diagnostics;
-using System.Security.Cryptography;
 
 namespace GymV1
 {
     public partial class MainPage : ContentPage
     {
         private Label _label;
+        private Label _label0;
 
         public MainPage()
         {
             InitializeComponent();
 
-            _label = new Label { Text = "Loading categoria..." };
+            _label0 = new Label { Text = "TEST ENV\n" };
+
+            _label = new Label { Text = "Cargando categoria..." };
 
             Content = new StackLayout
             {
                 Children =
             {
+                _label0,
                 _label
             }
             };
 
-            _ = LoadCategoriaAsync();
+            _ = LoadModelAsync();
         }
 
-        private async Task LoadCategoriaAsync()
+        private async Task LoadModelAsync()
         {
-            blCategoria bl = new blCategoria();
+            blCliente bl = new blCliente();
             try
             {
                 var mod = await bl.getModel();
 
-                _label.Text = $"categoria: {mod[5].categoria}";
+                _label.Text = $"Nombre: {mod[1].nombre}";
             }
             catch (Exception ex)
             {
