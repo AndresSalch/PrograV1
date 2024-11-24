@@ -23,7 +23,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.ExecuteAsync("Insert into Categoria (Categoria) values (@Categoria)", categoria);
+                var res = await conn.ExecuteAsync("Insert into categoria (categoria) values (@categoria)", categoria);
                 return res;
             }
         }
@@ -32,7 +32,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.ExecuteAsync("delete from Categoria Where IdCategoria = @id", new { id = categoria.IdCategoria });
+                var res = await conn.ExecuteAsync("delete from categoria Where idcategoria = @id", new { id = categoria.idcategoria });
                 return res;
             }
         }
@@ -41,7 +41,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.QueryFirstOrDefaultAsync<cCategoria>("select * from Categoria Where IdCategoria = @id", new { id = Id });
+                var res = await conn.QueryFirstOrDefaultAsync<cCategoria>("select * from categoria Where idcategoria = @id", new { id = Id });
                 return res;
             }
         }
@@ -50,7 +50,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.QueryAsync<cCategoria>("Select * from Categoria");
+                var res = await conn.QueryAsync<cCategoria>("Select * from categoria");
                 return res.ToList();
             }
         }
@@ -59,7 +59,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.ExecuteAsync("update Categoria Set Categoria = @Categoria Where IdCategoria = @IdCategoria", categoria);
+                var res = await conn.ExecuteAsync("update categoria Set categoria = @categoria Where idcategoria = @idcategoria", categoria);
                 return res;
             }
         }

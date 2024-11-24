@@ -5,8 +5,8 @@ namespace GymV1.Share.Model
     public class cCategoria
     {
         [Key]
-        public int IdCategoria { get; set; } = 0;
+        public int idcategoria { get; set; } = 0;
         [Required]
-        public String Categoria { get; set; } = string.Empty;
+        public String categoria { get; set; } = string.Empty;
     }
 }

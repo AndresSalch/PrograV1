@@ -6,101 +6,117 @@ namespace GymV1.BLL
 {
     public class DataAccess
     {
+        private static readonly HttpClientHandler _httpClientHandler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = (message, certificate, chain, sslPolicyErrors) => true
+        };
+
+        private static readonly HttpClient _httpClient = new HttpClient(_httpClientHandler);
+
         public async Task<string> getRequest(string url)
         {
-            using (HttpClient client = new HttpClient())
+            try
             {
-                try
-                {
-                    HttpResponseMessage response = await client.GetAsync(url);
-                    response.EnsureSuccessStatusCode();
-
-                    string body = await response.Content.ReadAsStringAsync();
-                    return body;
-
-                }
-                catch (HttpRequestException e)
-                {
-                    Console.WriteLine(e);
-                    return "ERROR";
-                }
+                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+            
+                string body = await response.Content.ReadAsStringAsync();
+                return body;
+            
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"HTTP Request failed: {ex.Message}");
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error: {ex.Message}");
+                return string.Empty;
             }
         }
 
         public async Task<string> postRequest<T>(string url, T model)
         {
-            using (HttpClient client = new HttpClient())
+            try
             {
-                try
-                {
-                    string json = JsonSerializer.Serialize(model);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                string json = JsonSerializer.Serialize(model);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage response = await client.PostAsync(url, content);
-                    response.EnsureSuccessStatusCode();
+                HttpResponseMessage response = await _httpClient.PostAsync(url, content);
+                response.EnsureSuccessStatusCode();
 
-                    string body = await response.Content.ReadAsStringAsync();
-                    return body;
-                }
-                catch (HttpRequestException e)
-                {
-                    Console.WriteLine(e);
-                    return "ERROR";
-                }
+                string body = await response.Content.ReadAsStringAsync();
+                return body;
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"HTTP Request failed: {ex.Message}");
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error: {ex.Message}");
+                return string.Empty;
             }
         }
 
         public async Task<string> putRequest<T>(string url, T model)
         {
-            using (HttpClient client = new HttpClient())
+        try
+        {
+            string json = JsonSerializer.Serialize(model);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _httpClient.PutAsync(url, content);
+            response.EnsureSuccessStatusCode();
+
+            string body = await response.Content.ReadAsStringAsync();
+            return body;
+
+        }
+            catch (HttpRequestException ex)
             {
-                try
-                {
-                    string json = JsonSerializer.Serialize(model);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    HttpResponseMessage response = await client.PutAsync(url, content);
-                    response.EnsureSuccessStatusCode();
-
-                    string body = await response.Content.ReadAsStringAsync();
-                    return body;
-
-                }
-                catch (HttpRequestException e)
-                {
-                    Console.WriteLine(e);
-                    return "ERROR";
-                }
+                Console.WriteLine($"HTTP Request failed: {ex.Message}");
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error: {ex.Message}");
+                return string.Empty;
             }
         }
 
         public async Task<string> deleteRequest<T>(string url, T model)
         {
-            using (HttpClient client = new HttpClient())
+            try
             {
-                try
+                string json = JsonSerializer.Serialize(model);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var request = new HttpRequestMessage(HttpMethod.Delete, url)
                 {
-                    string json = JsonSerializer.Serialize(model);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    Content = content
+                };
 
-                    var request = new HttpRequestMessage(HttpMethod.Delete, url)
-                    {
-                        Content = content
-                    };
+                HttpResponseMessage response = await _httpClient.SendAsync(request);
+                response.EnsureSuccessStatusCode();
 
-                    HttpResponseMessage response = await client.SendAsync(request);
-                    response.EnsureSuccessStatusCode();
+                string body = await response.Content.ReadAsStringAsync();
+                return body;
 
-                    string body = await response.Content.ReadAsStringAsync();
-                    return body;
-
-                }
-                catch (HttpRequestException e)
-                {
-                    Console.WriteLine(e);
-                    return "ERROR";
-                }
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"HTTP Request failed: {ex.Message}");
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error: {ex.Message}");
+                return string.Empty;
             }
         }
     }
 }
+

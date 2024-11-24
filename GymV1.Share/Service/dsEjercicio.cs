@@ -23,7 +23,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.ExecuteAsync("insert into Ejercicio (IdCategoria, Descripcion) values (@IdCategoria, @Descripcion)", ejercicio);
+                var res = await conn.ExecuteAsync("insert into Ejercicio (idcategoria, descripcion) values (@idcategoria, @descripcion)", ejercicio);
                 return res;
             }
 
@@ -33,7 +33,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.ExecuteAsync("delete from Ejercicio Where IdEjercicio = @IdEjercicio", ejercicio);
+                var res = await conn.ExecuteAsync("delete from Ejercicio Where idejercicio = @idejercicio", ejercicio);
                 return res;
             }
         }
@@ -42,7 +42,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.QueryFirstOrDefaultAsync<cEjercicio>("select * from Ejercicio Where IdEjercicio = @id", new { id = Id });
+                var res = await conn.QueryFirstOrDefaultAsync<cEjercicio>("select * from Ejercicio Where idejercicio = @id", new { id = Id });
                 return res;
             }
         }
@@ -60,7 +60,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.ExecuteAsync("update Ejercicio Set IdCategoria = @IdCategoria, Descripcion = @Descripcion Where IdEjercicio = @IdEjercicio", ejercicio);
+                var res = await conn.ExecuteAsync("update Ejercicio Set idcategoria = @idcategoria, descripcion = @descripcion Where idejercicio = @idejercicio", ejercicio);
                 return res;
             }
         }

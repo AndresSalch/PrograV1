@@ -23,7 +23,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.ExecuteAsync("insert into Cliente (Nombre,Identificacion,FechaNacimiento,Estatura,IMC,Peso,Correo) values (@Nombre,@Identificacion,@FechaNacimiento,@Estatura,@IMC,@Peso,@Correo)", cliente);
+                var res = await conn.ExecuteAsync("insert into Cliente (nombre,identificacion,fechanacimiento,Estatura,imc,peso,Correo) values (@nombre,@identificacion,@fechanacimiento,@Estatura,@imc,@peso,@Correo)", cliente);
                 return res;
             }
 
@@ -33,7 +33,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.ExecuteAsync("delete from Cliente Where Identificacion = @id", new { id = cliente.Identificacion });
+                var res = await conn.ExecuteAsync("delete from Cliente Where identificacion = @id", new { id = cliente.identificacion });
                 return res;
             }
         }
@@ -42,7 +42,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.QueryFirstOrDefaultAsync<cCliente>("select * from Cliente Where Identificacion = @id", new { id = Id });
+                var res = await conn.QueryFirstOrDefaultAsync<cCliente>("select * from Cliente Where identificacion = @id", new { id = Id });
                 return res;
             }
         }
@@ -60,7 +60,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.ExecuteAsync("update Cliente Set Nombre = @Nombre,FechaNacimiento = @FechaNacimiento,Estatura = @Estatura,IMC = @IMC,Peso = @Peso,Correo = @Correo Where Identificacion = @Identificacion", cliente);
+                var res = await conn.ExecuteAsync("update Cliente Set nombre = @nombre,fechanacimiento = @fechanacimiento,Estatura = @Estatura,imc = @imc,peso = @peso,Correo = @Correo Where identificacion = @identificacion", cliente);
                 return res;
             }
         }

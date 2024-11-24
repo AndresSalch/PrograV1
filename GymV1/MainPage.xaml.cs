@@ -1,30 +1,47 @@
-﻿using GymV1.BLL.BL;
+﻿using Azure;
+using GymV1.BLL.BL;
 using GymV1.Components.Pages;
 using GymV1.Share.Model;
+using System.Diagnostics;
 using System.Security.Cryptography;
 
 namespace GymV1
 {
     public partial class MainPage : ContentPage
     {
-        cCategoria cat;
+        private Label _label;
+
         public MainPage()
         {
-            getmethodAsync();
             InitializeComponent();
+
+            _label = new Label { Text = "Loading categoria..." };
+
             Content = new StackLayout
             {
                 Children =
-                {
-                    new Label { Text = $"Categoria l"}
-                }
+            {
+                _label
+            }
             };
+
+            _ = LoadCategoriaAsync();
         }
 
-        public async void getmethodAsync()
+        private async Task LoadCategoriaAsync()
         {
             blCategoria bl = new blCategoria();
-            cat = await bl.getModel();
+            try
+            {
+                var mod = await bl.getModel();
+
+                _label.Text = $"categoria: {mod[5].categoria}";
+            }
+            catch (Exception ex)
+            {
+                _label.Text = $"Error: {ex.Message}";
+            }
         }
     }
+
 }

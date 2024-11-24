@@ -6,79 +6,129 @@ namespace GymV1.BLL.BL
     public class blEjercicio
     {
         DataAccess _data = new DataAccess();
+        string url = "https://192.168.100.69:7271/api";
 
-        public async Task<cEjercicio?> getModel()
+
+        public async Task<List<cEjercicio>?> getModel()
         {
             try
             {
-                var response = await _data.getRequest("https://localhost:7271/api/Ejercicio/getEjercicios");
-                return JsonSerializer.Deserialize<cEjercicio>(response);
+                var response = await _data.getRequest($"{url}/Ejercicio/getEjercicios");
+
+                if (string.IsNullOrWhiteSpace(response))
+                {
+                    Console.WriteLine("Empty response.");
+                    return null;
+                }
+
+                return JsonSerializer.Deserialize<List<cEjercicio>>(response);
 
             }
-            catch (Exception e)
+            catch (JsonException ex)
             {
-                Console.Write(e);
-                return new cEjercicio();
+                Console.WriteLine($"JSON error: {ex.Message}");
             }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"HTTP error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return null;
         }
 
         public async Task<cEjercicio?> getModelId(int id)
         {
             try
             {
-                var response = await _data.getRequest($"https://localhost:7271/api/Ejercicio/getEjercicio/{id}");
+                var response = await _data.getRequest($"{url}/Ejercicio/getEjercicio/{id}");
+
+                if (string.IsNullOrWhiteSpace(response))
+                {
+                    Console.WriteLine("Empty response.");
+                    return null;
+                }
+
                 return JsonSerializer.Deserialize<cEjercicio>(response);
 
             }
-            catch (Exception e)
+            catch (JsonException ex)
             {
-                Console.Write(e);
-                return new cEjercicio();
+                Console.WriteLine($"JSON error: {ex.Message}");
             }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"HTTP error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return null;
         }
 
-        public async Task<string> postModel(cEjercicio model)
+        public async Task<string> postModel(cEjercicioDTO model)
         {
-            cEjercicioDTO dto = new cEjercicioDTO() { Descripcion = model.Descripcion, IdCategoria = model.IdCategoria };
-
             try
             {
-                var response = await _data.postRequest<cEjercicioDTO>("https://localhost:7271/api/Ejercicio/agregarEjercicio", dto);
+                var response = await _data.postRequest<cEjercicioDTO>($"{url}/Ejercicio/agregarEjercicio", model);
                 return response;
 
             }
-            catch (Exception e)
+            catch (HttpRequestException ex)
             {
-                return e.ToString();
+                Console.WriteLine($"HTTP error: {ex.Message}");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return string.Empty;
         }
 
         public async Task<string> putModel(cEjercicio model)
         {
             try
             {
-                var response = await _data.putRequest<cEjercicio>("https://localhost:7271/api/Ejercicio/actualizaEjercicio", model);
+                var response = await _data.putRequest<cEjercicio>($"{url}/Ejercicio/actualizaEjercicio", model);
                 return response;
 
             }
-            catch (Exception e)
+            catch (HttpRequestException ex)
             {
-                return e.ToString();
+                Console.WriteLine($"HTTP error: {ex.Message}");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return string.Empty;
         }
 
         public async Task<string> deleteModel(cEjercicio model)
         {
             try
             {
-                var response = await _data.deleteRequest<cEjercicio>("https://localhost:7271/api/Ejercicio/borrarEjercicio", model);
+                var response = await _data.deleteRequest<cEjercicio>($"{url}/Ejercicio/borrarEjercicio", model);
                 return response;
 
             }
-            catch (Exception e)
+            catch (HttpRequestException ex)
             {
-                return e.ToString();
+                Console.WriteLine($"HTTP error: {ex.Message}");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return string.Empty;
         }
     }
 }

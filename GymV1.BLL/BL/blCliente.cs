@@ -6,56 +6,94 @@ namespace GymV1.BLL.BL
     public class blCliente
     {
         DataAccess _data = new DataAccess();
+        string url = "https://192.168.100.69:7271/api";
 
-        public async Task<cCliente?> getModel()
+
+        public async Task<List<cCliente>?> getModel()
         {
             try
             {
-                var response = await _data.getRequest("https://localhost:7271/api/Cliente/getClientes");
-                return JsonSerializer.Deserialize<cCliente>(response);
+                var response = await _data.getRequest($"{url}/Cliente/getClientes");
+                if (string.IsNullOrWhiteSpace(response))
+                {
+                    Console.WriteLine("Empty response.");
+                    return null;
+                }
+
+                return JsonSerializer.Deserialize<List<cCliente>>(response);
 
             }
-            catch (Exception e)
+            catch (JsonException ex)
             {
-                Console.Write(e);
-                return new cCliente();
+                Console.WriteLine($"JSON error: {ex.Message}");
             }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"HTTP error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return null;
         }
 
         public async Task<cCliente?> getModelId(int id)
         {
             try
             {
-                var response = await _data.getRequest($"https://localhost:7271/api/Cliente/getCliente/{id}");
-                return JsonSerializer.Deserialize<cCliente>(response);
-
-            }
-            catch (Exception e)
+                var response = await _data.getRequest($"{url}/Cliente/getCliente/{id}");
+            if (string.IsNullOrWhiteSpace(response))
             {
-                Console.Write(e);
-                return new cCliente();
+                Console.WriteLine("Empty response.");
+                return null;
             }
+
+            return JsonSerializer.Deserialize<cCliente>(response);
+
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"JSON error: {ex.Message}");
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"HTTP error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
         }
 
-        public async Task<string> postModel(cCliente model)
+        return null;
+    }
+
+    public async Task<string> postModel(cCliente model)
         {
             try
             {
-                var response = await _data.postRequest<cCliente>("https://localhost:7271/api/Cliente/agregarClientes", model);
+                var response = await _data.postRequest<cCliente>($"{url}/Cliente/agregarClientes", model);
                 return response;
 
             }
-            catch (Exception e)
+            catch (HttpRequestException ex)
             {
-                return e.ToString();
+                Console.WriteLine($"HTTP error: {ex.Message}");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return string.Empty;
         }
 
         public async Task<string> putModel(cCliente model)
         {
             try
             {
-                var response = await _data.putRequest<cCliente>("https://localhost:7271/api/Cliente/actualizarClientes", model);
+                var response = await _data.putRequest<cCliente>($"{url}/Cliente/actualizarClientes", model);
                 return response;
 
             }
@@ -69,7 +107,7 @@ namespace GymV1.BLL.BL
         {
             try
             {
-                var response = await _data.deleteRequest<cCliente>("https://localhost:7271/api/Cliente/borrarClientes", model);
+                var response = await _data.deleteRequest<cCliente>($"{url}/Cliente/borrarClientes", model);
                 return response;
 
             }

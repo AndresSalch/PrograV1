@@ -5,10 +5,10 @@ namespace GymV1.Share.Model
     public class cRutinaDTO
     {
         [Required]
-        public String Nombre { get; set; } = string.Empty;
+        public String nombre { get; set; } = string.Empty;
         [Required]
-        public String Identificacion { get; set; } = string.Empty;
+        public String identificacion { get; set; } = string.Empty;
         [Required]
-        public String Estado { get; set; } = string.Empty;
+        public String estado { get; set; } = string.Empty;
     }
 }

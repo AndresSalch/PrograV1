@@ -23,7 +23,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.ExecuteAsync("insert into Rutina (Nombre, Identificacion, Estado) values (@Nombre, @Identificacion, @Estado)", rutina);
+                var res = await conn.ExecuteAsync("insert into Rutina (nombre, identificacion, estado) values (@nombre, @identificacion, @estado)", rutina);
                 return res;
             }
 
@@ -33,7 +33,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.ExecuteAsync("delete from Rutina Where IdRutina = @IdRutina", rutina);
+                var res = await conn.ExecuteAsync("delete from Rutina Where idrutina = @idrutina", rutina);
                 return res;
             }
         }
@@ -42,7 +42,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.QueryFirstOrDefaultAsync<cRutina>("select * from Rutina Where IdRutina = @id", new { id = Id });
+                var res = await conn.QueryFirstOrDefaultAsync<cRutina>("select * from Rutina Where idrutina = @id", new { id = Id });
                 return res;
             }
         }
@@ -60,7 +60,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.ExecuteAsync("update Rutina Set Nombre = @Nombre, Identificacion = @Identificacion, Estado = @Estado Where IdRutina = @IdRutina", rutina);
+                var res = await conn.ExecuteAsync("update Rutina Set nombre = @nombre, identificacion = @identificacion, estado = @estado Where idrutina = @idrutina", rutina);
                 return res;
             }
         }

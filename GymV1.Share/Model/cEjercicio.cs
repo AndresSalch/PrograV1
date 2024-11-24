@@ -5,10 +5,10 @@ namespace GymV1.Share.Model
     public class cEjercicio
     {
         [Key]
-        public int IdEjercicio { get; set; } = 0;
+        public int idejercicio { get; set; } = 0;
         [Required]
-        public int IdCategoria { get; set; } = 0;
+        public int idcategoria { get; set; } = 0;
         [Required]
-        public String Descripcion { get; set; } = string.Empty;
+        public String descripcion { get; set; } = string.Empty;
     }
 }

@@ -23,7 +23,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.ExecuteAsync("insert into RutinaEjercicio (IdRutina, IdEjercicio, CantidadSeries, Repeticiones, Descripcion) values (@IdRutina, @IdEjercicio, @CantidadSeries, @Repeticiones, @Descripcion)", rutinaE);
+                var res = await conn.ExecuteAsync("insert into RutinaEjercicio (idrutina, idejercicio, cantidadseries, repeticiones, descripcion) values (@idrutina, @idejercicio, @cantidadseries, @repeticiones, @descripcion)", rutinaE);
                 return res;
             }
 
@@ -33,7 +33,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.ExecuteAsync("delete from RutinaEjercicio Where IdRutina = @IdRutina", rutinaE);
+                var res = await conn.ExecuteAsync("delete from RutinaEjercicio Where idrutina = @idrutina", rutinaE);
                 return res;
             }
         }
@@ -42,7 +42,7 @@ namespace GymV1.Share.Service
         {
             using (var conn = CreateConnection())
             {
-                var res = await conn.QueryFirstOrDefaultAsync<cRutinaEjercicio>("select * from RutinaEjercicio Where IdRutina = @id", new { id = Id });
+                var res = await conn.QueryFirstOrDefaultAsync<cRutinaEjercicio>("select * from RutinaEjercicio Where idrutina = @id", new { id = Id });
                 return res;
             }
         }

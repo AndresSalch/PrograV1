@@ -6,78 +6,128 @@ namespace GymV1.BLL.BL
     public class blCategoria{
 
         DataAccess _data = new DataAccess();
+        string url = "https://192.168.100.69:7271/api";
 
-        public async Task<cCategoria?> getModel()
+        public async Task<List<cCategoria>?> getModel()
         {
             try
             {
-                var response = await _data.getRequest("https://localhost:7271/api/Categoria/getCategorias");
-                return JsonSerializer.Deserialize<cCategoria>(response);
+                var response = await _data.getRequest($"{url}/categoria/getCategorias");
 
-            }catch(Exception e)
-            {
-                Console.Write(e);
-                return new cCategoria();
+                if (string.IsNullOrWhiteSpace(response))
+                {
+                    Console.WriteLine("Empty response.");
+                    return null;
+                }
+
+                return JsonSerializer.Deserialize<List<cCategoria>>(response);
+
             }
+            catch (JsonException ex)
+            {
+                Console.WriteLine($"JSON error: {ex.Message}");
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"HTTP error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return null;
         }
 
         public async Task<cCategoria?> getModelId(int id)
         {
             try
             {
-                var response = await _data.getRequest($"https://localhost:7271/api/Categoria/getCategoria/{id}");
-                return JsonSerializer.Deserialize<cCategoria>(response);
+                var response = await _data.getRequest($"{url}/categoria/getCategoria/{id}");
+
+                if (string.IsNullOrWhiteSpace(response))
+                {
+                    Console.WriteLine("Empty response.");
+                    return null;
+                }
+
+                return JsonSerializer.Deserialize<cCategoria>(response); 
 
             }
-            catch (Exception e)
+            catch (JsonException ex)
             {
-                Console.Write(e);
-                return new cCategoria();
+                Console.WriteLine($"JSON error: {ex.Message}");
             }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"HTTP error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return null;
         }
 
-        public async Task<string> postModel(cCategoria model)
+        public async Task<string> postModel(cCategoriaDTO model)
         {
-            cCategoriaDTO dto = new cCategoriaDTO() { Categoria = model.Categoria };
-
             try
             {
-                var response = await _data.postRequest<cCategoriaDTO>("https://localhost:7271/api/Categoria/agregarCategoria", dto);
+                var response = await _data.postRequest<cCategoriaDTO>($"{url}/categoria/agregarCategoria", model);
                 return response;
 
             }
-            catch (Exception e)
+            catch (HttpRequestException ex)
             {
-                return e.ToString();
+                Console.WriteLine($"HTTP error: {ex.Message}");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return string.Empty;
         }
 
         public async Task<string> putModel(cCategoria model)
         {
             try
             {
-                var response = await _data.putRequest<cCategoria>("https://localhost:7271/api/Categoria/actualizarCategoria", model);
+                var response = await _data.putRequest<cCategoria>($"{url}/categoria/actualizarCategoria", model);
                 return response;
 
             }
-            catch (Exception e)
+            catch (HttpRequestException ex)
             {
-                return e.ToString();
+                Console.WriteLine($"HTTP error: {ex.Message}");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return string.Empty;
         }
 
         public async Task<string> deleteModel(cCategoria model)
         {
             try
             {
-                var response = await _data.deleteRequest<cCategoria>("https://localhost:7271/api/Categoria/borrarCategoria", model);
+                var response = await _data.deleteRequest<cCategoria>($"{url}/categoria/borrarCategoria", model);
                 return response;
 
             }
-            catch (Exception e)
+            catch (HttpRequestException ex)
             {
-                return e.ToString();
+                Console.WriteLine($"HTTP error: {ex.Message}");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return string.Empty;
         }
     }
 }

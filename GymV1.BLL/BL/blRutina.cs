@@ -6,79 +6,129 @@ namespace GymV1.BLL.BL
     public class blRutina
     {
         DataAccess _data = new DataAccess();
+        string url = "https://192.168.100.69:7271/api";
 
-        public async Task<cRutina?> getModel()
+
+        public async Task<List<cRutina>?> getModel()
         {
             try
             {
-                var response = await _data.getRequest("https://localhost:7271/api/Rutina/getRutina");
-                return JsonSerializer.Deserialize<cRutina>(response);
+                var response = await _data.getRequest($"{url}/Rutina/getRutina");
+
+                if (string.IsNullOrWhiteSpace(response))
+                {
+                    Console.WriteLine("Empty response.");
+                    return null;
+                }
+
+                return JsonSerializer.Deserialize<List<cRutina>>(response);
 
             }
-            catch (Exception e)
+            catch (JsonException ex)
             {
-                Console.Write(e);
-                return new cRutina();
+                Console.WriteLine($"JSON error: {ex.Message}");
             }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"HTTP error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return null;
         }
 
         public async Task<cRutina?> getModelId(int id)
         {
             try
             {
-                var response = await _data.getRequest($"https://localhost:7271/api/Rutina/getRutina/{id}");
+                var response = await _data.getRequest($"{url}/Rutina/getRutina/{id}");
+
+                if (string.IsNullOrWhiteSpace(response))
+                {
+                    Console.WriteLine("Empty response.");
+                    return null;
+                }
+
                 return JsonSerializer.Deserialize<cRutina>(response);
 
             }
-            catch (Exception e)
+            catch (JsonException ex)
             {
-                Console.Write(e);
-                return new cRutina();
+                Console.WriteLine($"JSON error: {ex.Message}");
             }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"HTTP error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return null;
         }
 
-        public async Task<string> postModel(cRutina model)
+        public async Task<string> postModel(cRutinaDTO model)
         {
-            cRutinaDTO dto = new cRutinaDTO() { Nombre = model.Nombre, Identificacion = model.Identificacion, Estado = model.Estado };
-
             try
             {
-                var response = await _data.postRequest<cRutinaDTO>("https://localhost:7271/api/Rutina/agregarRutina", dto);
+                var response = await _data.postRequest<cRutinaDTO>($"{url}/Rutina/agregarRutina", model);
                 return response;
 
             }
-            catch (Exception e)
+            catch (HttpRequestException ex)
             {
-                return e.ToString();
+                Console.WriteLine($"HTTP error: {ex.Message}");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return string.Empty;
         }
 
         public async Task<string> putModel(cRutina model)
         {
             try
             {
-                var response = await _data.putRequest<cRutina>("https://localhost:7271/api/Rutina/actualizarRutina", model);
+                var response = await _data.putRequest<cRutina>($"{url}/Rutina/actualizarRutina", model);
                 return response;
 
             }
-            catch (Exception e)
+            catch (HttpRequestException ex)
             {
-                return e.ToString();
+                Console.WriteLine($"HTTP error: {ex.Message}");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return string.Empty;
         }
 
         public async Task<string> deleteModel(cRutina model)
         {
             try
             {
-                var response = await _data.deleteRequest<cRutina>("https://localhost:7271/api/Rutina/borrarRutina", model);
+                var response = await _data.deleteRequest<cRutina>($"{url}/Rutina/borrarRutina", model);
                 return response;
 
             }
-            catch (Exception e)
+            catch (HttpRequestException ex)
             {
-                return e.ToString();
+                Console.WriteLine($"HTTP error: {ex.Message}");
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return string.Empty;
         }
     }
 }

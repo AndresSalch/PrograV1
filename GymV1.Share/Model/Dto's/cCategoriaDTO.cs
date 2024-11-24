@@ -5,6 +5,6 @@ namespace GymV1.Share.Model
     public class cCategoriaDTO
     {
         [Required]
-        public String Categoria { get; set; } = string.Empty;
+        public String categoria { get; set; } = string.Empty;
     }
 }
