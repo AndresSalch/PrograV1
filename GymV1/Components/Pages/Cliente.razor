@@ -1,0 +1,141 @@
+﻿@page "/Cliente"
+
+<Button Size="ButtonSize.ExtraLarge" style="background-color: #89f336;"> Agregar Nuevo Cliente </Button>
+<Button Size="ButtonSize.ExtraLarge" style="background-color: #89f336;" @onclick="ReloadPage"> Actualizar Lista </Button>
+
+<Grid TItem="cCliente"
+      Class="gidit table table-hover table-bordered table-striped text-primary-emphasis"
+      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true"
+      AllowPaging="true"
+      PageSize="5"
+      AllowSorting="true"
+      AllowSelection="false"
+      SelectionMode="GridSelectionMode.Multiple"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="cCliente" HeaderText="Identificacion" PropertyName="identificacion" SortKeySelector="item => item.identificacion">
+            @context.identificacion
+        </GridColumn>
+        <GridColumn TItem="cCliente" HeaderText="Nombre" PropertyName="nombre" SortKeySelector="item => item.nombre">
+            @context.nombre
+        </GridColumn>
+        <GridColumn TItem="cCliente" HeaderText="Correo" PropertyName="correo" SortKeySelector="item => item.correo">
+            @context.correo
+        </GridColumn>
+        <GridColumn TItem="cCliente" HeaderText="Estatura" PropertyName="estatura" SortKeySelector="item => item.estatura">
+            @context.estatura
+        </GridColumn>
+        <GridColumn TItem="cCliente" HeaderText="IMC" PropertyName="imc" SortKeySelector="item => item.imc">
+            @context.imc
+        </GridColumn>
+        <GridColumn TItem="cCliente" HeaderText="Peso" PropertyName="peso" SortKeySelector="item => item.peso">
+            @context.peso
+        </GridColumn>
+        <GridColumn TItem="cCliente" HeaderText="Acciones" PropertyName="actions">
+            <ConfirmDialog @ref="dialog2" />
+            <Button Color="ButtonColor.Primary" @onclick="ShowUpdateAsync"> Actualizar </Button>
+            <ConfirmDialog @ref="dialog"/>
+            <Button Color="ButtonColor.Danger" @onclick="() => ShowDeleteAsync(context)"> Eliminar </Button>
+        </GridColumn>
+    </GridColumns>
+
+</Grid>
+
+@code{
+
+    @inject NavigationManager _navigationManager
+    [Inject] protected PreloadService PreloadService { get; set; } = default!;
+    [Inject] ToastService ToastService { get; set; } = default!;
+
+    private IEnumerable<cCliente> clientes = default!;
+    private HashSet<cCliente> select = new();
+    private blCliente service = new blCliente();
+    private ConfirmDialog dialog = default!;
+    private ConfirmDialog dialog2 = default!;
+
+    private void ReloadPage()
+    {
+        _navigationManager.Refresh();
+    }
+
+
+    private async Task<GridDataProviderResult<cCliente>> EmployeesDataProvider(GridDataProviderRequest<cCliente> request)
+    {
+        try
+        {
+            PreloadService.Show(SpinnerColor.Dark);
+            if (clientes is null)
+                clientes = await service.getModel();
+
+            return await Task.FromResult(request.ApplyTo(clientes));
+        }
+        catch
+        {
+            return null;
+        }
+        finally
+        {
+            PreloadService.Hide();
+        }
+    }
+
+    private async Task ShowUpdateAsync()
+    {
+        var options = new ConfirmDialogOptions
+            {
+                YesButtonText = "Confirmar",
+                YesButtonColor = ButtonColor.Primary,
+                NoButtonText = "Cancelar",
+                NoButtonColor = ButtonColor.Danger
+            };
+
+        var confirmation = await dialog2.ShowAsync("d");
+
+        if (confirmation)
+        {
+        }
+        else
+        {
+        }
+    }
+
+    private async Task ShowDeleteAsync(cCliente item)
+    {
+        var options = new ConfirmDialogOptions
+            {
+                YesButtonText = "Confirmar",
+                YesButtonColor = ButtonColor.Primary,
+                NoButtonText = "Cancelar",
+                NoButtonColor = ButtonColor.Danger
+            };
+
+        var confirmation = await dialog.ShowAsync(
+            title: "Seguro que desea eliminar esto?",
+            message1: "Esto va a eliminar la información del cliente, ya no habrá vuelta atrás",
+            message2: "Desea continuar?",
+            confirmDialogOptions: options);
+
+        if (confirmation)
+        {
+            try{
+                PreloadService.Show(SpinnerColor.Dark);
+                await service.deleteModel(item);
+            }
+            catch
+            {
+                ToastService.Notify(new ToastMessage(, $"Error al eliminar Cliente."));
+            }
+            finally
+            {
+                PreloadService.Hide();
+                ReloadPage();
+                ToastService.Notify(new ToastMessage(ToastType.Success, $"Cliente eliminado con Éxito."));
+            }
+        }
+        else
+        {
+        }
+    }
+}

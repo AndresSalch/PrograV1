@@ -5,5 +5,10 @@
              x:Class="GymV1.MainPage"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
+    <BlazorWebView x:Name="blazorWebView" HostPage="wwwroot/index.html">
+        <BlazorWebView.RootComponents>
+            <RootComponent Selector="#app" ComponentType="{x:Type local:Components.Routes}" />
+        </BlazorWebView.RootComponents>
+    </BlazorWebView>
 
 </ContentPage>

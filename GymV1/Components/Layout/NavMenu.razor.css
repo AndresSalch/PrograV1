@@ -15,6 +15,30 @@
         background-color: rgba(255, 255, 255, 0.5);
     }
 
+.item{
+    border: 1px solid #89f336;
+    color: #89f336;
+}
+
+    .item:hover {
+        background-color: #89f336;
+        color: black;
+        font-size: large;
+        transition: 0.1s ease-in-out;
+    }
+
+.current {
+    border: 1px solid #89f336;
+    background-color: #89f336;
+    color: black;
+}
+
+    .current:hover {
+        color: black;
+        font-size: large;
+        transition:0.1s ease-in-out;
+    }
+
 .top-row {
     height: 3.5rem;
     background-color: rgba(0,0,0,0.4);
