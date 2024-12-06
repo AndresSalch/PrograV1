@@ -1,1 +1,242 @@
 ﻿@page "/Ejercicio"
+
+<ConfirmDialog @ref="create" />
+<Button Size="ButtonSize.ExtraLarge" style="background-color: #89f336;" @onclick="ShowCreateAsync"> Agregar Nuevo Ejercicio </Button>
+
+<Button Size="ButtonSize.ExtraLarge" style="background-color: #89f336;" @onclick="ReloadPage"> Actualizar Lista </Button>
+
+<Grid TItem="auxEjercicio"
+      Class="gidit table table-hover table-bordered table-striped text-primary-emphasis"
+      DataProvider="ExerciseDataProvider"
+      AllowFiltering="true"
+      AllowPaging="true"
+      PageSize="5"
+      AllowSorting="true"
+      AllowSelection="false"
+      SelectionMode="GridSelectionMode.Multiple"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="auxEjercicio" HeaderText="Categoria" PropertyName="categoria" SortKeySelector="item => item.categoria">
+            @context.categoria
+        </GridColumn>
+        <GridColumn TItem="auxEjercicio" HeaderText="Ejercicio" PropertyName="ejercicio" SortKeySelector="item => item.descripcion">
+            @context.descripcion
+        </GridColumn>
+        <GridColumn TItem="auxEjercicio" HeaderText="Acciones" PropertyName="actions">
+            <ConfirmDialog @ref="dialog2" />
+            <Button Color="ButtonColor.Primary"> Actualizar </Button>
+            <ConfirmDialog @ref="dialog" />
+            <Button Color="ButtonColor.Danger"> Eliminar </Button>
+        </GridColumn>
+    </GridColumns>
+
+</Grid>
+
+@code {
+
+    @inject NavigationManager _navigationManager
+    [Inject] protected PreloadService PreloadService { get; set; } = default!;
+    [Inject] ToastService ToastService { get; set; } = default!;
+
+    private IEnumerable<cEjercicio> ejercicios = default!;
+    private IEnumerable<auxEjercicio> ejerciciosaux = default!;
+    private HashSet<auxEjercicio> select = new();
+    private blEjercicio service1 = new blEjercicio();
+    private blCategoria service2 = new blCategoria();
+    private ConfirmDialog dialog = default!;
+    private ConfirmDialog dialog2 = default!;
+    private ConfirmDialog create = default!;
+
+    private void ReloadPage()
+    {
+        _navigationManager.Refresh();
+    }
+
+
+    private async Task<GridDataProviderResult<auxEjercicio>> ExerciseDataProvider(GridDataProviderRequest<auxEjercicio> request)
+    {
+        try
+        {
+            PreloadService.Show(SpinnerColor.Dark);
+
+            // Check if ejercicios are null and fetch them if necessary
+            if (ejercicios is null)
+                ejercicios = await service1.getModel();
+
+            // Create a list to hold the resulting data
+            List<auxEjercicio> ejerciciosaux = new List<auxEjercicio>();
+
+            // Fetch the category data for each exercise sequentially
+            foreach (var ex in ejercicios)
+            {
+                var cate = await service2.getModelId(ex.idcategoria);  // Wait for the category
+
+                if (cate != null)
+                {
+                    // If category is not null, add to the result list
+                    ejerciciosaux.Add(new auxEjercicio
+                        {
+                            idejercicio = ex.idejercicio,
+                            idcategoria = ex.idcategoria,
+                            descripcion = ex.descripcion,
+                            categoria = cate.categoria
+                        });
+                }
+                else
+                {
+                    ejerciciosaux.Add(new auxEjercicio
+                        {
+                            idejercicio = ex.idejercicio,
+                            idcategoria = ex.idcategoria,
+                            descripcion = ex.descripcion,
+                            categoria = "No existe" 
+                        });
+                }
+            }
+
+            return await Task.FromResult(request.ApplyTo(ejerciciosaux));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error occurred: " + ex.Message);
+            return null;
+        }
+        finally
+        {
+            PreloadService.Hide();
+        }
+    }
+
+
+    private async Task ShowCreateAsync()
+    {
+        var options = new ConfirmDialogOptions
+            {
+                IsVerticallyCentered = true,
+                YesButtonText = "Crear",
+                YesButtonColor = ButtonColor.Primary,
+                NoButtonText = "Volver",
+                NoButtonColor = ButtonColor.Danger
+            };
+        cEjercicioDTO item = new cEjercicioDTO();
+
+        var parameters = new Dictionary<string, object>
+    {
+        { "data", item },
+        { "OnDataUpdated", EventCallback.Factory.Create<cEjercicioDTO>(this, (updatedData) =>
+        {
+            item = updatedData;
+            StateHasChanged();
+        })}
+    };
+        var confirmation = await dialog2.ShowAsync<ClientePostComponent>("Añadir Cliente", parameters, confirmDialogOptions: options);
+
+        if (confirmation)
+        {
+            try
+            {
+                PreloadService.Show(SpinnerColor.Dark);
+                await service1.postModel(item);
+            }
+            catch
+            {
+
+            }
+            finally
+            {
+                PreloadService.Hide();
+                ReloadPage();
+            }
+        }
+        else
+        {
+        }
+    }
+
+    private async Task ShowUpdateAsync(cEjercicio item)
+    {
+        var options = new ConfirmDialogOptions
+            {
+                IsVerticallyCentered = true,
+                YesButtonText = "Terminar",
+                YesButtonColor = ButtonColor.Primary,
+                NoButtonText = "Volver",
+                NoButtonColor = ButtonColor.Danger
+            };
+
+        var parameters = new Dictionary<string, object>
+    {
+        { "data", item },
+        { "OnDataUpdated", EventCallback.Factory.Create<cEjercicio>(this, (updatedData) =>
+        {
+            item = updatedData;
+            StateHasChanged();
+        })}
+    };
+        var confirmation = await dialog2.ShowAsync<ClientePutComponent>("Actualizar", parameters, confirmDialogOptions: options);
+
+        if (confirmation)
+        {
+            try
+            {
+                await service1.putModel(item);
+            }
+            catch
+            {
+
+            }
+            finally
+            {
+            }
+        }
+        else
+        {
+        }
+    }
+
+    private async Task ShowDeleteAsync(cEjercicio item)
+    {
+        var options = new ConfirmDialogOptions
+            {
+                IsVerticallyCentered = true,
+                YesButtonText = "Confirmar",
+                YesButtonColor = ButtonColor.Primary,
+                NoButtonText = "Cancelar",
+                NoButtonColor = ButtonColor.Danger
+            };
+
+        var confirmation = await dialog.ShowAsync(
+            title: $"Seguro que desea eliminar {item.descripcion}?",
+            message1: "Esto va a eliminar la información del cliente, ya no habrá vuelta atrás",
+            message2: "Desea continuar?",
+            confirmDialogOptions: options);
+
+        if (confirmation)
+        {
+            try
+            {
+                PreloadService.Show(SpinnerColor.Dark);
+                await service1.deleteModel(item);
+            }
+            catch
+            {
+
+            }
+            finally
+            {
+                PreloadService.Hide();
+                ReloadPage();
+            }
+        }
+        else
+        {
+        }
+    }
+
+    private void OnThemeChanged(string themeName)
+    {
+
+        ToastService.Notify(new(ToastType.Success, $"Theme changed to {themeName}"));
+    }
+}
