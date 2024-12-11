@@ -1,0 +1,49 @@
+<div class="input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">Categoría</span>
+    @if (agree)
+    {
+        <input type="text" class="form-control" @bind-value="@create.categoria" aria-label="categoria" aria-describedby="basic-addon1">
+        <Button Size="ButtonSize.Small" style="background-color: #89f336;" @onclick="ToggleSwitch"> Agregar </Button>
+
+    }
+    else
+    {
+        <select @bind="@data.idcategoria" class="form-select" aria-label="Default select example">
+            <option disabled selected value="0">Categorias</option>
+            @foreach (var categoria in data2)
+            {
+                <option value="@categoria.idcategoria">@categoria.categoria</option>
+            }
+        </select>
+    }
+</div>
+<div class="input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">Ejercicio</span>
+    <input type="text" class="form-control" @bind-value="@data.descripcion" aria-label="ejercicio" aria-describedby="basic-addon1">
+</div>
+
+<Switch Class="mt-3" Value="agree" Label="Crear una Categoria?" ValueExpression="() => agree" ValueChanged="SwitchChanged" />
+
+@code {
+    [Parameter] public cEjercicioDTO data { get; set; }
+    [Parameter] public List<cCategoria> data2 { get; set; }
+    [Parameter] public EventCallback<cEjercicioDTO> OnDataUpdated { get; set; }
+
+    private cCategoriaDTO create = new();
+    private blCategoria bl = new();
+    private bool agree;
+    private int option = 0;
+
+    private void SwitchChanged(bool value)
+    {
+        agree = value;
+    }
+
+    private async void ToggleSwitch() {
+        agree = !agree;
+        await bl.postModel(create);
+        data2 = await bl.getModel();
+        StateHasChanged();
+    }
+
+}

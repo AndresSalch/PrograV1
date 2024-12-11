@@ -1,0 +1,23 @@
+<div class="input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">Categoría</span>
+    <select @bind="@data.idcategoria" class="form-select" aria-label="Default select example">
+        <option selected value="@data.idcategoria">@data.categoria</option>
+        @foreach (var categoria in data2)
+        {
+            <option value="@categoria.idcategoria">@categoria.categoria</option>
+        }
+    </select>
+
+</div>
+<div class="input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">Ejercicio</span>
+    <input type="text" class="form-control" @bind-value="@data.descripcion" aria-label="ejercicio" aria-describedby="basic-addon1">
+</div>
+
+@code {
+    [Parameter] public auxEjercicio data { get; set; }
+    [Parameter] public List<cCategoria> data2 { get; set; }
+    [Parameter] public EventCallback<auxEjercicio> OnDataUpdated { get; set; }
+
+    private int option = 0;
+}

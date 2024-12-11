@@ -6,7 +6,7 @@ namespace GymV1.BLL.BL
     public class blRutinaEjercicio
     {
         DataAccess _data = new DataAccess();
-        string url = "https://192.168.100.69:7271/api";
+        string url = "https://192.168.100.70:5092/api";
 
 
         public async Task<List<cRutinaEjercicio>?> getModel()
