@@ -1,0 +1,55 @@
+<Grid TItem="cCategoria"
+Class="gidit table table-hover table-bordered table-striped text-primary-emphasis"
+DataProvider="CategoriaDataProvider"
+AllowFiltering="true"
+AllowPaging="true"
+PageSize="8"
+AllowSorting="true"
+AllowSelection="true"
+SelectionMode="GridSelectionMode.Multiple"
+SelectedItemsChanged="OnSelectedItemsChanged"
+Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="cCategoria" HeaderText="Categoria" PropertyName="categoria" SortKeySelector="item => item.categoria">
+            @context.categoria
+        </GridColumn>
+    </GridColumns>
+
+</Grid>
+
+@code {
+    [Parameter] public EventCallback<HashSet<cCategoria>> OnDataUpdated { get; set; }
+    [Inject] protected PreloadService PreloadService { get; set; } = default!;
+
+    private IEnumerable<cCategoria> categoria = default!;
+    private HashSet<cCategoria> selectcategoria = new();
+    private blCategoria bl = new();
+
+
+    private async Task<GridDataProviderResult<cCategoria>> CategoriaDataProvider(GridDataProviderRequest<cCategoria> request)
+    {
+        try
+        {
+            PreloadService.Show(SpinnerColor.Dark);
+            if (categoria is null)
+                categoria = await bl.getModel();
+
+            return await Task.FromResult(request.ApplyTo(categoria));
+        }
+        catch
+        {
+            return null;
+        }
+        finally
+        {
+            PreloadService.Hide();
+        }
+    }
+
+    private async Task OnSelectedItemsChanged(HashSet<cCategoria> cates)
+    {
+        selectcategoria = cates is not null && cates.Any() ? cates : new();
+        await OnDataUpdated.InvokeAsync(selectcategoria);
+    }
+}

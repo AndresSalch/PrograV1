@@ -1,2 +1,60 @@
 ﻿@page "/"
+<style>
+    .mainbg{
+        background-color: red;
+        padding: 0;
+        border: none !important;
+    }
 
+    .image1 {
+        height: 504px;
+        width: 1000px;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .image1:hover{
+        transform: scaleX(1.05);
+        transition: 0.1s ease-in-out;
+    }
+
+    .image2{
+        height: 504px;
+        width: 800px;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .image2:hover{
+        transform: scaleX(1.05);
+        transition: 0.1s ease-in-out;
+    }
+
+    .image3 {
+        height: 150px;
+        width: 600px;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .image3:hover{
+        transform: scaleX(1.05);
+        transition: 0.1s ease-in-out;
+    }
+
+</style>
+
+<div class="container text-center mainbg">
+    <div class="row">
+        <div class="col-md-8 mainbg"><Image Src="https://i.imgur.com/lGqGIuP.png" Class="image1" Alt="placeholder" /></div>
+        <div class="col-6 col-md-4 mainbg"><Image Src="https://i.imgur.com/wMRdlt6.png" Class="image2" Alt="placeholder" /></div>
+    </div>
+    <div class="row">
+        <div class="col-6 col-md-4 mainbg"><Image Src="https://i.imgur.com/iRlgTR2.png" Class="image3" Alt="placeholder" /></div>
+        <div class="col-6 col-md-4 mainbg"><Image Src="https://i.imgur.com/dfqaStC.png" Class="image3" Alt="placeholder" /></div>
+        <div class="col-6 col-md-4 mainbg"><Image Src="https://i.imgur.com/wbHPAkO.png" Class="image3" Alt="placeholder" /></div>
+    </div>
+</div>

@@ -1,20 +1,21 @@
 ﻿@page "/Ejercicio"
 
-<ConfirmDialog @ref="create" />
-<Button Size="ButtonSize.ExtraLarge" style="background-color: #89f336;" @onclick="ShowCreateAsync"> Agregar Nuevo Ejercicio </Button>
-
-<Button Size="ButtonSize.ExtraLarge" style="background-color: #89f336;" @onclick="ReloadPage"> Actualizar Lista </Button>
+<ConfirmDialog Style="color: black;" @ref="create" />
+<Button Size="ButtonSize.ExtraLarge" Class="item" @onclick="ShowCreateAsync"> Agregar Nuevo Ejercicio </Button>
+<Button Size="ButtonSize.ExtraLarge" Class="item" @onclick="ReloadPage"> Actualizar Lista </Button>
+<ConfirmDialog Style="color: black;" @ref="delete" />
+<Button Size="ButtonSize.ExtraLarge" Class="item danger" @onclick="ShowdelCateAsync"> Eliminar Categorias </Button>
 
 <Grid TItem="auxEjercicio"
-      Class="gidit table table-hover table-bordered table-striped text-primary-emphasis"
-      DataProvider="ExerciseDataProvider"
-      AllowFiltering="true"
-      AllowPaging="true"
-      PageSize="5"
-      AllowSorting="true"
-      AllowSelection="false"
-      SelectionMode="GridSelectionMode.Multiple"
-      Responsive="true">
+Class="gidit table table-hover table-bordered table-striped text-primary-emphasis"
+DataProvider="ExerciseDataProvider"
+AllowFiltering="true"
+AllowPaging="true"
+PageSize="8"
+AllowSorting="true"
+AllowSelection="false"
+SelectionMode="GridSelectionMode.Multiple"
+Responsive="true">
 
     <GridColumns>
         <GridColumn TItem="auxEjercicio" HeaderText="Categoria" PropertyName="categoria" SortKeySelector="item => item.categoria">
@@ -23,11 +24,11 @@
         <GridColumn TItem="auxEjercicio" HeaderText="Ejercicio" PropertyName="ejercicio" SortKeySelector="item => item.descripcion">
             @context.descripcion
         </GridColumn>
-        <GridColumn TItem="auxEjercicio" HeaderText="Acciones" PropertyName="actions">
+        <GridColumn TItem="auxEjercicio" HeaderText="Acciones" PropertyName="actions" Sortable="false">
             <ConfirmDialog @ref="dialog2" />
-            <Button Color="ButtonColor.Primary" @onclick="() => ShowUpdateAsync(context)"> Actualizar </Button>
+            <Button Class="normal" Color="ButtonColor.Primary" @onclick="() => ShowUpdateAsync(context)"> Actualizar </Button>
             <ConfirmDialog @ref="dialog" />
-            <Button Color="ButtonColor.Danger" @onclick="() => ShowDeleteAsync(context)"> Eliminar </Button>
+            <Button Class="delete" Color="ButtonColor.Danger" @onclick="() => ShowDeleteAsync(context)"> Eliminar </Button>
         </GridColumn>
     </GridColumns>
 
@@ -39,6 +40,7 @@
     [Inject] protected PreloadService PreloadService { get; set; } = default!;
     [Inject] ToastService ToastService { get; set; } = default!;
 
+
     private IEnumerable<cEjercicio> ejercicios = default!;
     private IEnumerable<auxEjercicio> ejerciciosaux = default!;
     private HashSet<auxEjercicio> select = new();
@@ -47,6 +49,7 @@
     private ConfirmDialog dialog = default!;
     private ConfirmDialog dialog2 = default!;
     private ConfirmDialog create = default!;
+    private ConfirmDialog delete = default!;
 
     private void ReloadPage()
     {
@@ -86,7 +89,7 @@
                             idejercicio = ex.idejercicio,
                             idcategoria = ex.idcategoria,
                             descripcion = ex.descripcion,
-                            categoria = "No existe" 
+                            categoria = "NULL" 
                         });
                 }
             }
@@ -129,7 +132,7 @@
             StateHasChanged();
         })}
     };
-        var confirmation = await dialog2.ShowAsync<EjercicioPostComponent>("Añadir Ejercicio", parameters, confirmDialogOptions: options);
+        var confirmation = await create.ShowAsync<EjercicioPostComponent>("Añadir Ejercicio", parameters, confirmDialogOptions: options);
 
         if (confirmation)
         {
@@ -146,6 +149,57 @@
             {
                 PreloadService.Hide();
                 ReloadPage();
+            }
+        }
+        else
+        {
+        }
+    }
+
+    private async Task ShowdelCateAsync()
+    {
+        HashSet<cCategoria> hash = default!;
+
+        var options = new ConfirmDialogOptions
+            {
+                IsVerticallyCentered = true,
+                YesButtonText = "Eliminar",
+                YesButtonColor = ButtonColor.Danger,
+                NoButtonText = "Volver",
+                NoButtonColor = ButtonColor.Secondary
+            };
+
+        var parameters = new Dictionary<string, object>
+    {
+        { "OnDataUpdated", EventCallback.Factory.Create<HashSet<cCategoria>>(this, (updatedData) =>
+        {
+            hash = updatedData;
+            StateHasChanged();
+        })}
+    };
+        var confirmation = await delete.ShowAsync<EjercicioCategoriaComponent>("Eliminar Categorias", parameters, confirmDialogOptions: options);
+
+        if (confirmation)
+        {
+            try
+            {
+                if (hash != null && hash.Count != 0)
+                {
+                    PreloadService.Show(SpinnerColor.Dark);
+                    foreach (var cate in hash)
+                    {
+                        await service2.deleteModel(cate);
+                        ReloadPage();
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+            finally
+            {
+                PreloadService.Hide();
             }
         }
         else

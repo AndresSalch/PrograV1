@@ -22,7 +22,7 @@
     <input type="text" class="form-control" @bind-value="@data.descripcion" aria-label="ejercicio" aria-describedby="basic-addon1">
 </div>
 
-<Switch Class="mt-3" Value="agree" Label="Crear una Categoria?" ValueExpression="() => agree" ValueChanged="SwitchChanged" />
+<Switch Class="mt-3" Value="agree" Style="color: black;" Label="Crear una Categoria?" ValueExpression="() => agree" ValueChanged="SwitchChanged" />
 
 @code {
     [Parameter] public cEjercicioDTO data { get; set; }

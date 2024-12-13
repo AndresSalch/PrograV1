@@ -1,9 +1,9 @@
 ﻿@page "/Cliente"
 
 <ConfirmDialog @ref="create" />
-<Button Size="ButtonSize.ExtraLarge" style="background-color: #89f336;" @onclick="ShowCreateAsync"> Agregar Nuevo Cliente </Button>
+<Button Size="ButtonSize.ExtraLarge" Class="item" @onclick="ShowCreateAsync"> Agregar Nuevo Cliente </Button>
 
-<Button Size="ButtonSize.ExtraLarge" style="background-color: #89f336;" @onclick="ReloadPage"> Actualizar Lista </Button>
+<Button Size="ButtonSize.ExtraLarge" Class="item danger" @onclick="ReloadPage"> Actualizar Lista </Button>
 
 <Grid TItem="cCliente"
       Class="gidit table table-hover table-bordered table-striped text-primary-emphasis"
@@ -35,11 +35,11 @@
         <GridColumn TItem="cCliente" HeaderText="Peso" PropertyName="peso" SortKeySelector="item => item.peso">
             @context.peso
         </GridColumn>
-        <GridColumn TItem="cCliente" HeaderText="Acciones" PropertyName="actions">
+        <GridColumn TItem="cCliente" HeaderText="Acciones" PropertyName="actions" Sortable="false">
             <ConfirmDialog @ref="dialog2" />
-            <Button Color="ButtonColor.Primary" @onclick="() => ShowUpdateAsync(context)"> Actualizar </Button>
+            <Button Class="normal" Color="ButtonColor.Primary" @onclick="() => ShowUpdateAsync(context)"> Actualizar </Button>
             <ConfirmDialog @ref="dialog"/>
-            <Button Color="ButtonColor.Danger" @onclick="() => ShowDeleteAsync(context)"> Eliminar </Button>
+            <Button Class="delete" Color="ButtonColor.Danger" @onclick="() => ShowDeleteAsync(context)"> Eliminar </Button>
         </GridColumn>
     </GridColumns>
 
@@ -105,7 +105,7 @@
             StateHasChanged();
         })}
     };
-        var confirmation = await dialog2.ShowAsync<ClientePostComponent>("Añadir Cliente", parameters, confirmDialogOptions: options);
+        var confirmation = await create.ShowAsync<ClientePostComponent>("Añadir Cliente", parameters, confirmDialogOptions: options);
 
         if (confirmation)
         {

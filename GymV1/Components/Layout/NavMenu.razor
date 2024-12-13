@@ -1,7 +1,44 @@
 ﻿<nav class="navbar bg-body-tertiary">
     <form class="container-fluid justify-content-start">
-        <button class="btn btn-outline-success me-2 item" type="button" onclick="location.href='Cliente'">Clientes</button>
-        <button class="btn btn-outline-success me-2 current" type="button" onclick="location.href='/'">Principal</button>
-        <button class="btn btn-outline-success me-2 item" type="button" onclick="location.href='Ejercicio'">Ejercicios</button>
+        <button class="btn btn-outline-success me-2 @pointer1" type="button" @onclick="gotoCliente">Clientes</button>
+        <button class="btn btn-outline-success me-2 @pointer2" type="button" @onclick="gotoMain">Principal</button>
+        <button class="btn btn-outline-success me-2 @pointer3" type="button" @onclick="gotoEjercicio">Ejercicios</button>
     </form>
 </nav>
+
+@code{
+    @inject NavigationManager window
+
+    private String pointer1 = "item";
+    private String pointer2 = "current";
+    private String pointer3 = "item";
+
+    private void gotoMain()
+    {
+        window.NavigateTo("/");
+
+        pointer1 = "item";
+        pointer2 = "current";
+        pointer3 = "item";
+    }
+
+    private void gotoCliente()
+    {
+        window.NavigateTo("Cliente");
+
+        pointer1 = "current";
+        pointer2 = "item";
+        pointer3 = "item";
+
+    }
+
+    private void gotoEjercicio()
+    {
+        window.NavigateTo("Ejercicio");
+
+        pointer1 = "item";
+        pointer2 = "item";
+        pointer3 = "current";
+
+    }
+}

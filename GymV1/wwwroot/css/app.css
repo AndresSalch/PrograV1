@@ -1,7 +1,9 @@
-﻿html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+﻿@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+html, body {
+    font-family: "Poppins", sans-serif;
     background-color: #252525;
-    color:white !important;
+    color: white !important;
 }
 
 a, .btn-link {
@@ -17,6 +19,49 @@ a, .btn-link {
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
+
+.item {
+    border: 1px solid #89f336;
+    color: #89f336;
+}
+
+    .item:hover {
+        background-color: #89f336;
+        color: black;
+        font-size: large;
+        transition: 0.1s ease-in-out;
+    }
+
+.danger {
+    border: 1px solid #d93b57 !important;
+    color: #d93b57 !important;
+}
+
+    .danger:hover {
+        background-color: #d93b57 !important;
+        color: white !important;
+    }
+
+.normal {
+    color: black;
+    background-color: #89f336;
+    border: none;
+}
+
+    .normal:hover {
+        color: black;
+        background-color: #6fc928;
+    }
+
+.delete {
+    color: white;
+    background-color: #d93b57;
+    border: none;
+}
+
+    .delete:hover {
+        background-color: #b82e46;
+    }
 
 .content {
     padding-top: 1.1rem;
