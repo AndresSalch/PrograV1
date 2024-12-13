@@ -39,7 +39,7 @@ namespace GymV1.BLL.BL
             return null;
         }
 
-        public async Task<cCliente?> getModelId(int id)
+        public async Task<cCliente?> getModelId(string id)
         {
             try
             {

@@ -1,7 +1,6 @@
 ﻿@page "/"
 <style>
     .mainbg{
-        background-color: red;
         padding: 0;
         border: none !important;
     }
@@ -49,8 +48,8 @@
 
 <div class="container text-center mainbg">
     <div class="row">
-        <div class="col-md-8 mainbg"><Image Src="https://i.imgur.com/lGqGIuP.png" Class="image1" Alt="placeholder" /></div>
-        <div class="col-6 col-md-4 mainbg"><Image Src="https://i.imgur.com/wMRdlt6.png" Class="image2" Alt="placeholder" /></div>
+        <div class="col-md-8 mainbg"><Image Src="https://i.imgur.com/lGqGIuP.png" @onclick="gotoRutine" Class="image1" Alt="placeholder" /></div>
+        <div class="col-6 col-md-4 mainbg"><Image Src="https://i.imgur.com/wMRdlt6.png" @onclick="gotoCreate" Class="image2" Alt="placeholder" /></div>
     </div>
     <div class="row">
         <div class="col-6 col-md-4 mainbg"><Image Src="https://i.imgur.com/iRlgTR2.png" Class="image3" Alt="placeholder" /></div>
@@ -58,3 +57,18 @@
         <div class="col-6 col-md-4 mainbg"><Image Src="https://i.imgur.com/wbHPAkO.png" Class="image3" Alt="placeholder" /></div>
     </div>
 </div>
+
+@code{
+
+    @inject NavigationManager window
+
+    private void gotoRutine()
+    {
+        window.NavigateTo("Rutinas");
+    }
+
+    private void gotoCreate()
+    {
+        window.NavigateTo("Create");
+    }
+}

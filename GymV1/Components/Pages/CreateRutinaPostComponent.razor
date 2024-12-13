@@ -1,0 +1,34 @@
+<div class="mb-3">
+    <label for="basic-url" class="form-label">Nombre para esta rutina</label>
+    <input type="text" class="form-control" @bind-value="newRut.nombre" aria-label="Nombre" aria-describedby="basic-addon1">
+</div>
+<div class="mb-3">
+    <label class="form-label">Cantidad de Repeticiones</label>
+    <NumberInput TValue="int" @bind-Value="newRutE.repeticiones" EnableMinMax="true" Min="1" Max="500" Placeholder="Cantidad" />
+</div>
+<div class="mb-3">
+    <label class="form-label">Cantidad de Series</label>
+    <NumberInput TValue="int" @bind-Value="newRutE.cantidadseries" EnableMinMax="true" Min="1" Max="500" Placeholder="Cantidad" />
+</div>
+<div class="mb-3">
+    <label for="basic-url" class="form-label">Elija el Ejercicio a Agregar</label>
+    <select @bind="newRutE.idejercicio" class="form-select" aria-label="Default select example">
+        <option disabled selected value="0">Ejercicios</option>
+        @foreach (var e in exercises)
+        {
+            <option value="@e.idejercicio">@e.descripcion</option>
+        }
+    </select>
+</div>
+<div class="mb-3">
+    <label for="basic-url" class="form-label">Instrucciones</label>
+    <input type="text" class="form-control" @bind-value="newRutE.descripcion" aria-label="Instrucciones" aria-describedby="basic-addon1">
+</div>
+
+@code {
+    [Parameter] public List<cEjercicio> exercises { get; set; }
+    [Parameter] public cRutinaDTO newRut { get; set; }
+    [Parameter] public cRutinaEjercicio newRutE { get; set; }
+    [Parameter] public EventCallback<cRutinaDTO> OnDataUpdated1 { get; set; }
+    [Parameter] public EventCallback<cRutinaEjercicio> OnDataUpdated2 { get; set; }
+}

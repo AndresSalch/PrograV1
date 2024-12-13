@@ -9,6 +9,6 @@ namespace GymV1.Share.Model
         [Required]
         public String identificacion { get; set; } = string.Empty;
         [Required]
-        public String estado { get; set; } = string.Empty;
+        public String estado { get; set; } = "Pendiente";
     }
 }
