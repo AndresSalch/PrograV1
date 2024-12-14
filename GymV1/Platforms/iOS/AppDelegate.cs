@@ -1,4 +1,5 @@
 ﻿using Foundation;
+using GymV1.Components;
 
 namespace GymV1
 {
@@ -7,4 +8,5 @@ namespace GymV1
     {
         protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
     }
+    
 }

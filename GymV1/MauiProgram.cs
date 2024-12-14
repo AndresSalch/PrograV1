@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using GymV1.Components;
+using Microsoft.Extensions.Logging;
 
 namespace GymV1
 {
@@ -15,6 +16,7 @@ namespace GymV1
                 });
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddBlazorBootstrap();
+
 
 
 #if DEBUG

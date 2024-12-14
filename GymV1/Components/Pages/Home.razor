@@ -54,7 +54,7 @@
     <div class="row">
         <div class="col-6 col-md-4 mainbg"><Image Src="https://i.imgur.com/iRlgTR2.png" Class="image3" Alt="placeholder" /></div>
         <div class="col-6 col-md-4 mainbg"><Image Src="https://i.imgur.com/dfqaStC.png" Class="image3" Alt="placeholder" /></div>
-        <div class="col-6 col-md-4 mainbg"><Image Src="https://i.imgur.com/wbHPAkO.png" Class="image3" Alt="placeholder" /></div>
+        <div class="col-6 col-md-4 mainbg"><Image Src="https://i.imgur.com/wbHPAkO.png" @onclick="CloseApplication" Class="image3" Alt="placeholder" /></div>
     </div>
 </div>
 
@@ -70,5 +70,18 @@
     private void gotoCreate()
     {
         window.NavigateTo("Create");
+    }
+
+    public void CloseApplication()
+    {
+#if ANDROID
+    var activity = (Android.App.Activity)Microsoft.Maui.ApplicationModel.Platform.CurrentActivity;
+    activity.FinishAffinity();
+#endif
+
+#if WINDOWS
+    Microsoft.UI.Xaml.Application.Current.Exit();
+#endif
+
     }
 }

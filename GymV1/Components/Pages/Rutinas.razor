@@ -1,12 +1,23 @@
 @page "/Rutinas"
+@using System.Text.Json
 <style>
     .center {
         display: flex;
-        justify-content: center; 
-        align-items: center; 
-        height: 100vh; 
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
     }
-    .input{
+
+    .blox{
+        display: grid;
+    }
+
+    .list{
+         margin 0;
+        padding 0;
+    }
+
+    .input {
         width: 40% !important;
         background-color: #1e1e1e;
         padding: 30px;
@@ -14,28 +25,131 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
 </style>
-<div class="center">
-    <div class="container text-center input">
-    <div class="row">
-        <div class="col">
-            <h1>Consulta Cliente</h1>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <p>Digite la cédula a consultar</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
-        </div>
-    </div>
-        <div class="row">
-            <div class="col">
-                <br />
-                <button type="button" class="btn btn-primary normal">Confirmar</button>
+@if (gotUser)
+{
+    <ul class="list-group list-group-horizontal">
+        <li class="list-group-item">An item</li>
+        <li class="list-group-item">A second item</li>
+        <li class="list-group-item">A third item</li>
+    </ul>
+    <ul class="list-group list-group-horizontal-sm">
+        <li class="list-group-item">An item</li>
+        <li class="list-group-item">A second item</li>
+        <li class="list-group-item">A third item</li>
+    </ul>
+    <ul class="list-group list-group-horizontal-md">
+        <li class="list-group-item">An item</li>
+        <li class="list-group-item">A second item</li>
+        <li class="list-group-item">A third item</li>
+    </ul>
+    <ul class="list-group list-group-horizontal-lg">
+        <li class="list-group-item">An item</li>
+        <li class="list-group-item">A second item</li>
+        <li class="list-group-item">A third item</li>
+    </ul>
+}
+else
+{
+    <div class="center">
+        <div class="container text-center input">
+            <div class="row">
+                <div class="col">
+                    <h1>Crear Rutinas</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <p>Digite la cédula de usuario a crear sus rutinas</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <input type="text" class="form-control" @bind-value="@id" placeholder="Numero de Cédula" aria-label="Username" aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <br />
+                    <button type="button" @onclick="() => checkUser()" class="btn btn-primary normal">Confirmar</button>
+                </div>
             </div>
         </div>
-</div>
-</div>
+    </div>
+}
+
+
+@code{
+    @inject NavigationManager _navigationManager
+    [Inject] protected PreloadService PreloadService { get; set; } = default!;
+
+    private bool gotUser = false;
+    private string id = "";
+    private cCliente? currentUser;
+    private IEnumerable<cCategoria>? category = default!;
+    private IEnumerable<cEjercicio>? exercice = default!;
+    private IEnumerable<cRutina>? routine = default!;
+    private IEnumerable<cRutinaEjercicio>? routineE = default!;
+
+    private blCliente clientbl = new();
+    private blCategoria categobl = new();
+    private blEjercicio ejerbl = new();
+    private blRutina rutinabl = new();
+    private blRutinaEjercicio rutinaEbl = new();
+    private IEnumerable<unionRutina>? routineState = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = _navigationManager.Uri;
+        var uriParts = new Uri(uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uriParts.Query);
+
+        if (query["CurrentUser"] != null)
+        {
+            var serializedUser = query["CurrentUser"];
+            currentUser = JsonSerializer.Deserialize<cCliente>(serializedUser);
+        }
+
+        if (currentUser != null)
+        {
+            gotUser = true;
+        }
+    }
+
+    private void ReloadPage()
+    {
+        var serializedUser = JsonSerializer.Serialize<cCliente>(currentUser);
+
+        var parameters = new Dictionary<string, object>
+    {
+        { "CurrentUser", serializedUser }
+    };
+
+        var uri = _navigationManager.GetUriWithQueryParameters(parameters);
+
+        _navigationManager.NavigateTo(uri, forceLoad: true);
+    }
+
+    private async Task checkUser()
+    {
+        try
+        {
+            currentUser = await clientbl.getModelId(id);
+            if (currentUser != null)
+            {
+                gotUser = true;
+                StateHasChanged();
+            }
+            else
+            {
+                gotUser = false;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching user: {ex.Message}");
+            gotUser = false;
+            StateHasChanged();
+        }
+    }
+}

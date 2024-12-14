@@ -1,4 +1,5 @@
 @page "/Create"
+@using System.Text.Json
 <style>
     .center {
     display: flex;
@@ -19,7 +20,7 @@
     <br>
     <ConfirmDialog Style="color: black;" @ref="create" />
     <Button Size="ButtonSize.ExtraLarge" Class="item" @onclick="ShowCreateAsync"> Agregar Nueva Rutina de Ejercicios </Button>
-    <Button Size="ButtonSize.ExtraLarge" Class="item danger" @onclick="StateHasChanged"> Actualizar Lista </Button>
+    <Button Size="ButtonSize.ExtraLarge" Class="item danger" @onclick="ReloadPage"> Actualizar Lista </Button>
 
     <Grid TItem="unionRutina"
     Class="gidit table table-hover table-bordered table-striped text-primary-emphasis"
@@ -53,6 +54,10 @@
             </GridColumn>
             <GridColumn TItem="unionRutina" HeaderText="Instrucciones" PropertyName="instrucciones" SortKeySelector="item => item.descripcionRutina">
                 @context.descripcionRutina
+            </GridColumn>
+            <GridColumn TItem="unionRutina" HeaderText="Eliminar" PropertyName="eliminar">
+                <ConfirmDialog @ref="delete" />
+                <Button Class="delete" Color="ButtonColor.Danger" @onclick="() => ShowDeleteAsync(context)"> Eliminar </Button>
             </GridColumn>
         </GridColumns>
 
@@ -105,10 +110,20 @@
     private IEnumerable<unionRutina>? routineState = default!;
 
     private ConfirmDialog create = default!;
-
+    private ConfirmDialog delete = default!;
 
     protected override async Task OnInitializedAsync()
     {
+        var uri = _navigationManager.Uri;
+        var uriParts = new Uri(uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uriParts.Query);
+
+        if (query["CurrentUser"] != null)
+        {
+            var serializedUser = query["CurrentUser"];
+            currentUser = JsonSerializer.Deserialize<cCliente>(serializedUser);
+        }
+
         if (currentUser != null)
         {
             gotUser = true;
@@ -117,7 +132,16 @@
 
     private void ReloadPage()
     {
-        _navigationManager.Refresh();
+        var serializedUser = JsonSerializer.Serialize<cCliente>(currentUser);
+
+        var parameters = new Dictionary<string, object>
+    {
+        { "CurrentUser", serializedUser }
+    };
+
+        var uri = _navigationManager.GetUriWithQueryParameters(parameters);
+
+        _navigationManager.NavigateTo(uri, forceLoad: true);
     }
 
     private async Task checkUser()
@@ -251,6 +275,46 @@
                 }
 
                 await rutinaEbl.postModel(item2);
+            }
+            catch
+            {
+
+            }
+            finally
+            {
+                PreloadService.Hide();
+                ReloadPage();
+            }
+        }
+        else
+        {
+        }
+    }
+
+    private async Task ShowDeleteAsync(unionRutina item)
+    {
+        var options = new ConfirmDialogOptions
+            {
+                IsVerticallyCentered = true,
+                YesButtonText = "Confirmar",
+                YesButtonColor = ButtonColor.Primary,
+                NoButtonText = "Cancelar",
+                NoButtonColor = ButtonColor.Danger
+            };
+
+        var confirmation = await delete.ShowAsync(
+            title: $"Seguro que desea eliminar la rutina {item.nombreRutina}?",
+            message1: "Esto va a eliminar la información de la rutina, mas no la del ejercio, ya no habrá vuelta atrás",
+            message2: "Desea continuar?",
+            confirmDialogOptions: options);
+
+        if (confirmation)
+        {
+            try
+            {
+                PreloadService.Show(SpinnerColor.Dark);
+                await rutinabl.deleteModel(new cRutina(){idrutina = item.idrutina, nombre = item.nombreRutina, identificacion = item.identificacion, estado = item.estado});
+                await rutinaEbl.deleteModel(new cRutinaEjercicio(){idrutina = item.idrutina, idejercicio = item.idejercicio, cantidadseries = item.cantidadseries, repeticiones = item.repeticiones, descripcion = item.descripcionRutina});
             }
             catch
             {
