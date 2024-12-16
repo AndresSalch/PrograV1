@@ -1,35 +1,38 @@
-<div class="input-group mb-3">
-    <span class="input-group-text" id="basic-addon1">ID</span>
-    <input type="text" class="form-control" @bind-value="@data.identificacion" aria-label="Identificación" aria-describedby="basic-addon1">
-</div>
-<div class="input-group mb-3">
-    <span class="input-group-text" id="basic-addon1">Nombre</span>
-    <input type="text" class="form-control" @bind-value="@data.nombre" aria-label="Nombre" aria-describedby="basic-addon1">
-</div>
-<div class="input-group mb-3">
-    <span class="input-group-text" id="basic-addon1">Fecha</span>
-    <DateInput TValue="DateOnly" @bind-Value="@date1" Placeholder="Enter Date" />
-</div>
-<div class="input-group mb-3">
-    <span class="input-group-text" id="basic-addon1">Correo</span>
-    <input type="text" class="form-control" @bind-value="@data.correo" aria-label="correo" aria-describedby="basic-addon1">
-</div>
-<div class="input-group mb-3">
-    <span class="input-group-text" id="basic-addon1">IMC</span>
-    <input type="text" class="form-control" @bind-value="@data.imc" aria-label="imc" aria-describedby="basic-addon1">
-</div>
-<div class="input-group mb-3">
-    <span class="input-group-text" id="basic-addon1">Estatura</span>
-    <input type="text" class="form-control" @bind-value="@data.estatura" aria-label="estatura" aria-describedby="basic-addon1">
-</div>
-<div class="input-group mb-3">
-    <span class="input-group-text" id="basic-addon1">Peso</span>
-    <input type="text" class="form-control" @bind-value="@data.peso" aria-label="peso" aria-describedby="basic-addon1">
-</div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">ID</span>
+        <input type="text" class="form-control" pattern="^\d{9}$" @bind-value="@data.identificacion" aria-label="Identificación" aria-describedby="basic-addon1">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Nombre</span>
+        <input type="text" class="form-control" pattern="^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$" @bind-value="@data.nombre" aria-label="Nombre" aria-describedby="basic-addon1">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Fecha</span>
+        <DateInput TValue="DateOnly" Max="@DateOnly.FromDateTime(max)" @bind-Value="@date1" Placeholder="Enter Date" />
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Correo</span>
+        <input type="text" class="form-control" pattern="@pattern" @bind-value="@data.correo" aria-label="correo" aria-describedby="basic-addon1">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">IMC</span>
+        <input type="text" class="form-control" pattern="^\d{1,2}(\.\d{1,2})?$" @bind-value="@data.imc" aria-label="imc" aria-describedby="basic-addon1">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Estatura</span>
+        <input type="text" class="form-control" pattern="^\d{2,3}(\.\d{1,2})?$" @bind-value="@data.estatura" aria-label="estatura" aria-describedby="basic-addon1">
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Peso</span>
+        <input type="text" class="form-control" pattern="^\d{1,3}(\.\d{1,2})?$" @bind-value="@data.peso" aria-label="peso" aria-describedby="basic-addon1">
+    </div>
 
 @code {
     [Parameter] public cCliente data { get; set; }
     [Parameter] public EventCallback<cCliente> OnDataUpdated { get; set; }
+    private ElementReference formElement;
 
+    private string pattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+    private DateTime max = DateTime.Now.AddYears(-15);
     private DateOnly date1 = DateOnly.FromDateTime(DateTime.Now);
 }

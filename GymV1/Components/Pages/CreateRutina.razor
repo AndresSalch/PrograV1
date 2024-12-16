@@ -78,6 +78,11 @@
             <div class="row">
                 <div class="col">
                     <input type="text" class="form-control" @bind-value="@id" placeholder="Numero de Cédula" aria-label="Username" aria-describedby="basic-addon1">
+                    @if (baduser)
+                    {
+                        <br />
+                        <p style="color: #d93b57">El usuario no se ha encontrado!</p>
+                    }
                 </div>
             </div>
             <div class="row">
@@ -95,6 +100,7 @@
     [Inject] protected PreloadService PreloadService { get; set; } = default!;
 
     private bool gotUser = false;
+    private bool baduser = false;
     private string id = "";
     private cCliente? currentUser;
     private IEnumerable<cCategoria>? category = default!;
@@ -152,11 +158,13 @@
             if (currentUser != null)
             {
                 gotUser = true;
+                baduser = false;
                 StateHasChanged();
             }
             else
             {
                 gotUser = false;
+                baduser = true;
                 StateHasChanged();
             }
         }

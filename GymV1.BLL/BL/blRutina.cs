@@ -6,7 +6,7 @@ namespace GymV1.BLL.BL
     public class blRutina
     {
         DataAccess _data = new DataAccess();
-        string url = "https://192.168.100.70:5092/api";
+        string url = "https://gymhost-hjh3d8caerf0cuc9.centralus-01.azurewebsites.net/api";
 
 
         public async Task<List<cRutina>?> getModel()

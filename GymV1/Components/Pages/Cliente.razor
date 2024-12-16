@@ -1,13 +1,13 @@
 ﻿@page "/Cliente"
 
-<ConfirmDialog @ref="create" />
+<ConfirmDialog Style="color: black;" @ref="create" />
 <Button Size="ButtonSize.ExtraLarge" Class="item" @onclick="ShowCreateAsync"> Agregar Nuevo Cliente </Button>
 
 <Button Size="ButtonSize.ExtraLarge" Class="item danger" @onclick="ReloadPage"> Actualizar Lista </Button>
 
 <Grid TItem="cCliente"
       Class="gidit table table-hover table-bordered table-striped text-primary-emphasis"
-      DataProvider="EmployeesDataProvider"
+      DataProvider="ClienteDataProvider"
       AllowFiltering="true"
       AllowPaging="true"
       PageSize="5"
@@ -64,7 +64,7 @@
     }
 
 
-    private async Task<GridDataProviderResult<cCliente>> EmployeesDataProvider(GridDataProviderRequest<cCliente> request)
+    private async Task<GridDataProviderResult<cCliente>> ClienteDataProvider(GridDataProviderRequest<cCliente> request)
     {
         try
         {
@@ -74,8 +74,9 @@
 
             return await Task.FromResult(request.ApplyTo(clientes));
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine("Error occurred: " + ex.Message);
             return null;
         }
         finally

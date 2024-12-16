@@ -1,16 +1,78 @@
 ﻿@inherits LayoutComponentBase
 @using BlazorBootstrap
 
+<style>
+    .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    }
+
+    .imge{
+    width: 25%;
+    }
+
+    .layout{
+    padding-top: 5%;
+    padding-bottom: 5%;
+    border-radius: 10px;
+    }
+</style>
+
 <div class="page">
     <main>
-        <div class="bottom-row px-4">
-            <NavMenu />
-        </div>
+        @if (!Status)
+        {
+            <div class="center">
+                <div class="container text-center layout">
+                    <div class="row">
+                        <div class="col">
+                            <Image Src="https://i.imgur.com/xCoQO60.png" Class="imge" Alt="placeholder" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <h4>No se ha podido establecer conexión con la red</h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <Button Class="normal" @onclick="retryState" Color="ButtonColor.Primary"> Reintentar </Button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }else{
+            <div class="bottom-row px-4">
+                <NavMenu />
+            </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
+            <article class="content px-4">
+                @Body
+            </article>
+        }
     </main>
 </div>
 
-<Preload LoadingText="Loading..." />
+@code{
+    private bool Status = false;
+    NetworkAccess accessType = Connectivity.Current.NetworkAccess;
+
+    protected override void OnInitialized()
+    {
+        if(accessType == NetworkAccess.Internet)
+        {
+            Status = true;
+        }
+    }
+
+    private void retryState()
+    {
+        if (Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
+        {
+            Status = true;
+        }
+    }
+
+}

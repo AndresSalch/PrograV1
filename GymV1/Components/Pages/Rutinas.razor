@@ -2,51 +2,89 @@
 @using System.Text.Json
 <style>
     .center {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     }
 
     .blox{
-        display: grid;
+    display: grid;
     }
 
     .list{
-         margin 0;
-        padding 0;
+    margin 0;
+    padding 0;
     }
 
     .input {
-        width: 40% !important;
-        background-color: #1e1e1e;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    width: 40% !important;
+    background-color: #1e1e1e;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .grids{
+    color: black;
+    background-color: #f1f2f6 !important;
+    border-color: #747d8c
+    }
+
+    .rowgrid{
+    color: black;
+    background-color: #ced6e0 !important;
+    border-color: #747d8c
     }
 </style>
 @if (gotUser)
 {
-    <ul class="list-group list-group-horizontal">
-        <li class="list-group-item">An item</li>
-        <li class="list-group-item">A second item</li>
-        <li class="list-group-item">A third item</li>
-    </ul>
-    <ul class="list-group list-group-horizontal-sm">
-        <li class="list-group-item">An item</li>
-        <li class="list-group-item">A second item</li>
-        <li class="list-group-item">A third item</li>
-    </ul>
-    <ul class="list-group list-group-horizontal-md">
-        <li class="list-group-item">An item</li>
-        <li class="list-group-item">A second item</li>
-        <li class="list-group-item">A third item</li>
-    </ul>
-    <ul class="list-group list-group-horizontal-lg">
-        <li class="list-group-item">An item</li>
-        <li class="list-group-item">A second item</li>
-        <li class="list-group-item">A third item</li>
-    </ul>
+    <Grid TItem="unionRutina"
+    Class="table table-hover table-bordered table-striped rowgrid"
+    DataProvider="RoutineDataProvider">
+
+        <GridColumns>
+            <GridColumn class="grids" TItem="unionRutina" HeaderText="Rutina" HeaderTextAlignment="Alignment.Center">
+                @context.nombreRutina
+            </GridColumn>
+            <GridColumn class="grids" TItem="unionRutina" HeaderText="Ejercicio" HeaderTextAlignment="Alignment.Center">
+                @context.descripcion
+            </GridColumn>
+            <GridColumn class="grids" TItem="unionRutina" HeaderText="Categoria" HeaderTextAlignment="Alignment.Center">
+                @context.categoria
+            </GridColumn>
+            <GridColumn class="grids" TItem="unionRutina" HeaderText="Series" HeaderTextAlignment="Alignment.Center">
+                @context.cantidadseries
+            </GridColumn>
+            <GridColumn class="grids" TItem="unionRutina" HeaderText="Repeticiones" HeaderTextAlignment="Alignment.Center">
+                @context.repeticiones
+            </GridColumn>
+            <GridColumn class="grids" TItem="unionRutina" HeaderText="Instrucciones" HeaderTextAlignment="Alignment.Center">
+                @context.descripcionRutina
+            </GridColumn>
+            <GridColumn class="grids" TItem="unionRutina" HeaderText="Estado" HeaderTextAlignment="Alignment.Center">
+                @context.estado
+            </GridColumn>
+        </GridColumns>
+
+    </Grid>
+
+    <div class="text-center">
+        @if (state == 1)
+        {
+            <Button Class="normal" @onclick="startRoutine" Color="ButtonColor.Primary"> Empezar </Button>
+
+        }
+        else if (state == 2)
+        {
+            <Button Class="normal" @onclick="nextRoutine" Color="ButtonColor.Primary"> Siguiente </Button>
+        }
+        else if (state == 3)
+        {
+            <Button Class="normal" @onclick="nextRoutine" Color="ButtonColor.Primary"> Terminar </Button>
+        }
+    </div>
+
 }
 else
 {
@@ -54,7 +92,7 @@ else
         <div class="container text-center input">
             <div class="row">
                 <div class="col">
-                    <h1>Crear Rutinas</h1>
+                    <h1>Consulta Rutina</h1>
                 </div>
             </div>
             <div class="row">
@@ -65,6 +103,11 @@ else
             <div class="row">
                 <div class="col">
                     <input type="text" class="form-control" @bind-value="@id" placeholder="Numero de Cédula" aria-label="Username" aria-describedby="basic-addon1">
+                    @if (baduser)
+                    {
+                        <br />
+                        <p style="color: #d93b57">El usuario no se ha encontrado!</p>
+                    }
                 </div>
             </div>
             <div class="row">
@@ -82,7 +125,10 @@ else
     @inject NavigationManager _navigationManager
     [Inject] protected PreloadService PreloadService { get; set; } = default!;
 
+    private int indexPointer = 0;
+    private int state = 1;
     private bool gotUser = false;
+    private bool baduser = false;
     private string id = "";
     private cCliente? currentUser;
     private IEnumerable<cCategoria>? category = default!;
@@ -115,6 +161,112 @@ else
         }
     }
 
+    private async Task<GridDataProviderResult<unionRutina>> RoutineDataProvider(GridDataProviderRequest<unionRutina> request)
+    {
+        if (routineState is null)
+        {
+            try
+            {
+                if (routineE == null)
+                {
+                    await fillListas();
+                }
+
+                routineState = routineE.Join(routine, re => re.idrutina, r => r.idrutina, (re, r) => new { re, r })
+                                    .Join(exercice, re_r => re_r.re.idejercicio, e => e.idejercicio, (re_r, e) => new { re_r, e })
+                                    .Join(category, re_r_e => re_r_e.e.idcategoria, c => c.idcategoria,
+                                           (re_r_e, c) => new unionRutina
+                                               {
+                                                   idejercicio = re_r_e.e.idejercicio,
+                                                   idcategoria = c.idcategoria,
+                                                   idrutina = re_r_e.re_r.r.idrutina,
+                                                   nombre = currentUser?.nombre ?? "Unknown",
+                                                   descripcion = re_r_e.e.descripcion,
+                                                   categoria = c.categoria,
+                                                   nombreRutina = re_r_e.re_r.r.nombre,
+                                                   identificacion = re_r_e.re_r.r.identificacion,
+                                                   estado = re_r_e.re_r.r.estado,
+                                                   cantidadseries = re_r_e.re_r.re.cantidadseries,
+                                                   repeticiones = re_r_e.re_r.re.repeticiones,
+                                                   descripcionRutina = re_r_e.re_r.re.descripcion
+                                               }).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occurred in RoutineDataProvider: {ex.Message}");
+            }
+            finally
+            {
+                PreloadService.Hide();
+            }
+        }
+
+        return await Task.FromResult(request.ApplyTo(routineState));
+    }
+
+    private async Task startRoutine()
+    {
+        List<unionRutina> temp = routineState.ToList();
+        if(temp.Count > 0)
+        {
+            temp[indexPointer].estado = "En Progreso...";
+        }
+        routineState = temp;
+        await rutinabl.putModel(new cRutina() { idrutina = temp[indexPointer].idrutina, nombre = temp[indexPointer].nombreRutina, identificacion = temp[indexPointer].identificacion, estado = temp[indexPointer].estado });
+        indexPointer++;
+        state = 2;
+        StateHasChanged();
+    }
+
+    private async Task nextRoutine()
+    {
+        List<unionRutina> temp = routineState.ToList();
+        if(state == 3)
+        {
+            foreach(var r in routineState)
+            {
+                r.estado = "Pendiente";
+                await rutinabl.putModel(new cRutina() { idrutina = r.idrutina, nombre = r.nombreRutina, identificacion = r.identificacion, estado = r.estado });
+            }
+
+            indexPointer = 0;
+            state = 1;
+            StateHasChanged();
+        }
+        else
+        {
+            temp[indexPointer - 1].estado = "Terminado";
+            temp[indexPointer].estado = "En Progreso...";
+            routineState = temp;
+            await rutinabl.putModel(new cRutina() { idrutina = temp[indexPointer].idrutina, nombre = temp[indexPointer].nombreRutina, identificacion = temp[indexPointer].identificacion, estado = temp[indexPointer].estado });
+            indexPointer++;
+
+            if (temp.Count == indexPointer)
+            {
+                state = 3;
+            }
+        }
+        StateHasChanged();
+
+    }
+
+
+    private async Task fillListas()
+    {
+        try
+        {
+            category = await categobl.getModel();
+            exercice = await ejerbl.getModel();
+            routine = await rutinabl.getModel();
+            routineE = await rutinaEbl.getModel();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching data: {ex.Message}");
+        }
+    }
+
     private void ReloadPage()
     {
         var serializedUser = JsonSerializer.Serialize<cCliente>(currentUser);
@@ -137,11 +289,13 @@ else
             if (currentUser != null)
             {
                 gotUser = true;
+                baduser = false;
                 StateHasChanged();
             }
             else
             {
                 gotUser = false;
+                baduser = true;
                 StateHasChanged();
             }
         }
